@@ -52,7 +52,9 @@ public class EditarAlunos extends javax.swing.JFrame {
         try {
 
             DefaultTableModel tabelaAlunos = (DefaultTableModel) alunosTable.getModel();
+            DefaultTableModel tabelaCursos = (DefaultTableModel) cursosTable.getModel();
             tabelaAlunos.setRowCount(0);
+            tabelaCursos.setRowCount(0);
             //tabelaCurso.setRowCount(0);
             //cursosComboBox.removeAllItems();
             
@@ -329,6 +331,7 @@ public class EditarAlunos extends javax.swing.JFrame {
 
     private void atualizarAlunoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atualizarAlunoButtonActionPerformed
         try {
+            if(linhaSelecionada != -1){
             con = Conectadb.conectadb();
             stmt = con.createStatement();
             String scriptUpdateNomeAluno = "UPDATE Aluno SET nome = '" + nomeAlunoTextField.getText() + "'"
@@ -356,6 +359,9 @@ public class EditarAlunos extends javax.swing.JFrame {
             stmt.close();
             con.close();
             JOptionPane.showMessageDialog(null, "Aluno atualizado com sucesso");
+            }else{
+                JOptionPane.showMessageDialog(null, "Selecione um aluno");
+            }
 
         } catch (SQLException ex) {
             Logger.getLogger(EditarAlunos.class.getName()).log(Level.SEVERE, null, ex);

@@ -280,116 +280,64 @@ public class EditarCursos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void atualizaCursoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atualizaCursoButtonActionPerformed
-        try {
-            DefaultTableModel alunoTableModel = (DefaultTableModel) alunosTable.getModel();
-            int codigoCurso = Integer.parseInt(codigoCursoTextField.getText());
-            con = Conectadb.conectadb();
-            stmt = con.createStatement();
-            String scriptUpdateDescricaoCurso = "UPDATE Curso SET descricao = '" + descricaoCursoTextField.getText()
-                    + "', ementa = '" + ementaCursoTextArea.getText() + "' WHERE codigo in (" + codigoCurso + ")";
-            stmt.executeUpdate(scriptUpdateDescricaoCurso);
+        if (linhaSelecionada != -1) {
+            try {
 
-            
-            
-            
-            /*for (int i = 0; i < alunoTableModel.getRowCount(); i++) {            
-                boolean achou = false;
-                for (Curso_Aluno u : alunoAdicionadoOURemoveux) {
-                    if (Integer.parseInt(String.valueOf( alunoTableModel.getValueAt(i, 0))) != u.codigo_aluno 
-                            && alunosTable.getSelectionModel().isSelectedIndex(i)) {
-                        achou = true;
+                DefaultTableModel alunoTableModel = (DefaultTableModel) alunosTable.getModel();
+                codigoCurso = Integer.parseInt(codigoCursoTextField.getText());
+                con = Conectadb.conectadb();
+                stmt = con.createStatement();
+                String scriptUpdateDescricaoCurso = "UPDATE Curso SET descricao = '" + descricaoCursoTextField.getText()
+                        + "', ementa = '" + ementaCursoTextArea.getText() + "' WHERE codigo in (" + codigoCurso + ")";
+                stmt.executeUpdate(scriptUpdateDescricaoCurso);
+
+                for (int i = 0; i < alunosTable.getRowCount(); i++) {
+                    boolean achou = false;
+                    if (alunosTable.getSelectionModel().isSelectedIndex(i)) {
+                        for (Curso_Aluno u : alunoAdicionadoOURemoveux) {
+                            if (u.getCodigo_aluno() == Integer.parseInt(String.valueOf(alunosTable.getValueAt(i, 0)))) {
+                                achou = true;
+                            }
+                        }
+                        if (achou == false) {
+                            String scriptSqlAluno = "INSERT INTO curso_aluno (codigo_aluno,codigo_curso) "
+                                    + "VALUES (" + alunosTable.getValueAt(i, 0) + ", " + codigoCurso + ");";
+                            stmt.executeUpdate(scriptSqlAluno);
+                        }
                     }
                 }
-                if (achou == true) {
-                    String scriptSqlAluno = "INSERT INTO curso_aluno (codigo_aluno,codigo_curso) "
-                            + "VALUES (" + Integer.parseInt(String.valueOf( alunoTableModel.getValueAt(i, 0))) + ", " + codigoCurso + ");";
-                    stmt.executeUpdate(scriptSqlAluno);
-                }
-            }*/
 
-            for (int i = 0; i < alunosTable.getRowCount(); i++) {
-                boolean achou = false;
-                if (alunosTable.getSelectionModel().isSelectedIndex(i)) {
-                    for (Curso_Aluno u : alunoAdicionadoOURemoveux) {
-                        if(u.getCodigo_aluno() == Integer.parseInt(String.valueOf(alunosTable.getValueAt(i, 0)))){
+                for (Curso_Aluno u : alunoAdicionadoOURemoveux) {
+                    boolean achou = false;
+                    for (int i = 0; i < alunoTableModel.getRowCount(); i++) {
+                        if (Integer.parseInt(String.valueOf(alunoTableModel.getValueAt(i, 0))) == u.codigo_aluno
+                                && !alunosTable.getSelectionModel().isSelectedIndex(i)) {
                             achou = true;
                         }
                     }
-                    if(achou == false){
-                        String scriptSqlAluno = "INSERT INTO curso_aluno (codigo_aluno,codigo_curso) "
-                            + "VALUES (" + alunosTable.getValueAt(i, 0) + ", " + codigoCurso + ");";
-                    stmt.executeUpdate(scriptSqlAluno);
-                    }
-                }
-            }
-            
-            
-            
-            
-            for (Curso_Aluno u : alunoAdicionadoOURemoveux) {
-                boolean achou = false;
-                for (int i = 0; i < alunoTableModel.getRowCount(); i++) {
-                    if (Integer.parseInt(String.valueOf( alunoTableModel.getValueAt(i, 0))) == u.codigo_aluno 
-                            && !alunosTable.getSelectionModel().isSelectedIndex(i)) {
-                        achou = true;
-                    }
-                }
-                if (achou == true) {
-                    String scriptSqlAlunos2 = "DELETE FROM curso_aluno "
-                            + "WHERE codigo = " + u.getCodigo() + ";";
-                    stmt.executeUpdate(scriptSqlAlunos2);
-                }
-            }
-            
-            CarregaDadosAtuais();
-            JOptionPane.showMessageDialog(null, "Cadastro atualizado");
-            /*for (Curso_Aluno u : alunoAdicionadoOURemoveux) {
-                boolean achou = false;
-
-                for (int i = 0; i < alunoTableModel.getRowCount(); i++) {
-                    if (u.codigo_aluno != Integer.parseInt(String.valueOf(alunosTable.getValueAt(i, 0)))
-                            && alunosTable.getSelectionModel().isSelectedIndex(i)) {
-                        achou = true;
-                    }
-                }
-                if (achou == false) {
-                    String scriptSqlAluno = "INSERT INTO curso_aluno (codigo_aluno,codigo_curso) "
-                            + "VALUES (" + u.codigo_aluno + ", " + u.codigo_curso + ");";
-                    stmt.executeUpdate(scriptSqlAluno);
-                }
-            }*/
-
-            /*int[] linhasUpdate = alunosTable.getSelectedRows();
-
-            
-            String scriptSqlAlunos2 = "DELETE FROM curso_aluno "
-                                        + "WHERE codigo_ = " + codigoCurso + "";
-                                stmt.executeUpdate(scriptSqlAlunos2);*/
- /* for (int i = 0; i < linhas.length; i++) {
-                for (int j = 0; j < linhasUpdate.length;j++ ) {
-                    if (linhas[i] == linhasUpdate[j]) {
-                        
-                    }
-                }
-            }*/
- /* int[] linhas = alunosTable.getSelectedRows();
-
-            for (Aluno u : listaAluno) {
-                for (int i = 0; i < linhas.length; i++) {
-                    
-                    if (u.getNome().equals(alunoTableModel.getValueAt(linhas[i], 0))) {
-                        String scriptSqlAlunos2 = "INSERT INTO curso_aluno ( codigo_aluno, codigo_curso) "
-                                + "VALUES (" + u.getCodigo() + ", " + codigoCurso + ")";
+                    if (achou == true) {
+                        String scriptSqlAlunos2 = "DELETE FROM curso_aluno "
+                                + "WHERE codigo = " + u.getCodigo() + ";";
                         stmt.executeUpdate(scriptSqlAlunos2);
                     }
                 }
-            }*/
-            con.close();
+                CarregaDadosAtuais();
+                linhaSelecionada = -1;
+                codigoCurso = -1;
+                codigoCursoTextField.setText("");
+                descricaoCursoTextField.setText("");
+                ementaCursoTextArea.setText("");
+                stmt.close();
+                con.close();
+                JOptionPane.showMessageDialog(null, "Cadastro atualizado");
 
-        } catch (SQLException ex) {
-            Logger.getLogger(CadastrarAlunos.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(CadastrarAlunos.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(CadastrarAlunos.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(CadastrarAlunos.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Selecione um curso");
         }
     }//GEN-LAST:event_atualizaCursoButtonActionPerformed
 
@@ -415,7 +363,7 @@ public class EditarCursos extends javax.swing.JFrame {
         for (Curso_Aluno u : alunoAdicionadoOURemoveux) {
             x = x + u.getCodigo_aluno() + "\n";
         }
-        testejLabel1.setText(x);
+
         String fff = "";
         String nomeAluno = "";
         for (Curso_Aluno u : listaCurso_Aluno) {
@@ -426,14 +374,10 @@ public class EditarCursos extends javax.swing.JFrame {
                         for (int i = 0; i < alunoTableModelo.getRowCount(); i++) {
                             if (nomeAluno.equals(alunosTable.getValueAt(i, 1))) {
                                 fff += nomeAluno;
-
-                                testejLabel1.setText(fff);
-
                                 alunosTable.getSelectionModel().addSelectionInterval(i, i);
 
                                 nomeAluno = "";
                                 i = alunoTableModelo.getRowCount();
-                                //Curso_Aluno curso_aluno_realizado = new Curso_Aluno(u.codigo, u.codigo_aluno, codigoCurso);
                                 alunoAdicionadoOURemoveux.add(u);
                             }
                         }
