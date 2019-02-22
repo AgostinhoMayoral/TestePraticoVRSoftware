@@ -6,6 +6,7 @@
 package frames;
 
 import classes.Aluno;
+import classes.Curso;
 import classes.Curso_Aluno;
 import dal.Conectadb;
 
@@ -24,50 +25,54 @@ import javax.swing.table.DefaultTableModel;
  */
 public class MainPage extends javax.swing.JFrame {
 
-  Connection con = null;
-    Statement stmt = null;
-    ResultSet rs = null;
+    Conectadb conectaDBObj = new Conectadb();
+    ArrayList<Aluno> listaAluno = new ArrayList<Aluno>();
+    ArrayList<Curso> listaCurso = new ArrayList<Curso>();
     ArrayList<Curso_Aluno> listaCurso_alunos = new ArrayList<Curso_Aluno>();
+
     public MainPage() {
         initComponents();
         this.setLocationRelativeTo(null);
         MatriculasCadastrados();
     }
 
-public void MatriculasCadastrados() {
+    public void MatriculasCadastrados() {
+
+      
+            
 
         try {
-            con = Conectadb.conectadb();
-
-            String scriptSQL = "Select * FROM curso_aluno";
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(scriptSQL);
-
-            int codigo;
-            int codigo_curso;
-            int codigo_aluno;
+            listaAluno = conectaDBObj.selectListaAlunosDB();
+            listaCurso = conectaDBObj.selectListaCursosDB();
+            listaCurso_alunos = conectaDBObj.selectListaCurso_AlunoDB();
             DefaultTableModel tabelaMatricula = (DefaultTableModel) matriculasTable.getModel();
-            while (rs.next()) {
-
-                codigo = rs.getInt("codigo");
-                codigo_curso = rs.getInt("codigo_curso");
-                codigo_aluno = rs.getInt("codigo_aluno");
-
-                Curso_Aluno curso_aluno = new Curso_Aluno(codigo, codigo_curso,codigo_aluno);
-                listaCurso_alunos.add(curso_aluno);
-                Object[] lista = {codigo,codigo_aluno, codigo_curso};
+            tabelaMatricula.setRowCount(0);
+            for (Curso_Aluno u : listaCurso_alunos) {
+                Object[] lista = {u.getCodigo(), u.getCodigo_aluno(), u.getCodigo_curso()};
                 tabelaMatricula.addRow(lista);
             }
-
-            rs.close();
-            con.close();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(CadastrarAlunos.class.getName()).log(Level.SEVERE, null, ex);
+            for (int i =0; i < matriculasTable.getRowCount();i++ ) {
+                for (Aluno u : listaAluno) {
+                    if(matriculasTable.getValueAt(i, 1).equals(u.codigo)){
+                        matriculasTable.setValueAt(u.nome, i, 1);
+                    }
+                }
+            }
+            for (int i =0; i < matriculasTable.getRowCount();i++ ) {
+                for (Curso u : listaCurso) {
+                    if(matriculasTable.getValueAt(i, 2).equals(u.getCodigo())){
+                        matriculasTable.setValueAt(u.getDescricao(), i, 2);
+                    }
+                }
+            }
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(CadastrarAlunos.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainPage.class.getName()).log(Level.SEVERE, null, ex);
         }
-}
+            
+
+
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -78,6 +83,7 @@ public void MatriculasCadastrados() {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         matriculasTable = new javax.swing.JTable();
+        refreshButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -111,20 +117,32 @@ public void MatriculasCadastrados() {
         ));
         jScrollPane1.setViewportView(matriculasTable);
 
+        refreshButton.setText("Refresh");
+        refreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(matriculaCursojButton)
-                    .addComponent(matriculaAlunojButton)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 870, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(matriculaCursojButton)
+                            .addComponent(matriculaAlunojButton)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(refreshButton)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,7 +155,9 @@ public void MatriculasCadastrados() {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(49, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(refreshButton)
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -168,6 +188,10 @@ public void MatriculasCadastrados() {
     private void matriculaCursojButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_matriculaCursojButtonActionPerformed
         new CadastrarCursos().setVisible(true);
     }//GEN-LAST:event_matriculaCursojButtonActionPerformed
+
+    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
+        MatriculasCadastrados();
+    }//GEN-LAST:event_refreshButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -212,5 +236,6 @@ public void MatriculasCadastrados() {
     private javax.swing.JButton matriculaAlunojButton;
     private javax.swing.JButton matriculaCursojButton;
     private javax.swing.JTable matriculasTable;
+    private javax.swing.JButton refreshButton;
     // End of variables declaration//GEN-END:variables
 }
